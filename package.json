@@ -1,0 +1,36 @@
+{
+  "name": "blog-engine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/warframeblog/blog-engine.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/warframeblog/blog-engine/issues"
+  },
+  "homepage": "https://github.com/warframeblog/blog-engine#readme",
+  "dependencies": {
+    "@octokit/rest": "^16.17.0",
+    "axios": "^0.18.0",
+    "cheerio": "^1.0.0-rc.2",
+    "cron": "^1.7.0",
+    "dotenv": "^6.2.0",
+    "module-alias": "^2.2.0",
+    "nodegit": "^0.24.1",
+    "queue": "^6.0.0"
+  },
+  "_moduleAliases": {
+    "@data-refresher": "data-refresher",
+    "@update-events": "data-refresher/update-events",
+    "@git-integration": "data-refresher/git-integration",
+    "@platforms": "data-refresher/platforms"
+  }
+}
