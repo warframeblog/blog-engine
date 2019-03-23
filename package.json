@@ -30,7 +30,10 @@
   "_moduleAliases": {
     "@data-refresher": "data-refresher",
     "@update-events": "data-refresher/update-events",
+    "@update-rewards-drop": "data-refresher/update-rewards-drop",
     "@git-integration": "data-refresher/git-integration",
-    "@platforms": "data-refresher/platforms"
+    "@platforms": "data-refresher/platforms",
+    "@update-if-changed": "data-refresher/update-if-changed",
+    "@drops-page-data": "data-refresher/drops-page-data"
   }
 }

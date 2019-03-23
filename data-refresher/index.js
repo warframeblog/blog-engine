@@ -3,11 +3,18 @@ const Queue = require('queue');
 
 const git = require('@git-integration');
 const updateEvents = require('@update-events');
+const updateRewardsDrop = require('@update-rewards-drop');
 
 const refreshData = async() => {
 	await git.resetRepoState();
-	const result = await updateEvents();
-	if(result) {
+	let result;
+	try {
+		result = await Promise.all([updateRewardsDrop()]);
+	} catch(e) {
+		console.log(`Cannot complete some of the updates ${e}`);
+		await git.resetRepoState();
+	}
+	if(result && result.some(r => r === true)) {
 		await git.changeRepoState();		
 	}
 }
@@ -17,6 +24,9 @@ const queue = new Queue({ concurrency: 1, autostart: true })
 	.on('success', () => console.log('success'))
 	.on('error', (e) => console.log(e));
 
-module.exports = new CronJob('0 */1 * * * *', function() {
-	queue.push(refreshData);
-});
+const dataRefresher = () => {
+	const cronJob = new CronJob('0 */1 * * * *', () => queue.push(refreshData));
+	cronJob.start();
+}
+
+module.exports = refreshData;
