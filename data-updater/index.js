@@ -6,7 +6,7 @@ const updateEvents = require('@update-events');
 const updateRewardsDrop = require('@update-rewards-drop');
 
 const queue = new Queue({ concurrency: 1, autostart: true })
-	.on('start', () => console.log(`Start refreshing data`))
+	.on('start', () => console.log(`Start updating data`))
 	.on('success', (result) => {
 		if(result) {
 			console.log(`Data was successfully updated`);
@@ -37,13 +37,13 @@ const updateDataJob = async() => {
 }
 
 const updateData = async() => {
-	const dataToRefresh = [
+	const dataToUpdate = [
 		updateEvents(),
 		updateRewardsDrop(),
 	];
 
 	try {
-		return await Promise.all(dataToRefresh);
+		return await Promise.all(dataToUpdate);
 	} catch(e) {
 		console.log(`Cannot complete some of the updates ${e}`);
 		await git.resetRepoState();
