@@ -2,7 +2,7 @@ const CronJob = require('cron').CronJob;
 const Queue = require('queue');
 
 const git = require('@git-integration');
-const updateEvents = require('@update-events');
+// const updateEvents = require('@update-events');
 const updateRewardsDrop = require('@update-rewards-drop');
 
 const refreshData = async() => {
@@ -24,9 +24,11 @@ const queue = new Queue({ concurrency: 1, autostart: true })
 	.on('success', () => console.log('success'))
 	.on('error', (e) => console.log(e));
 
-const dataRefresher = () => {
-	const cronJob = new CronJob('0 */1 * * * *', () => queue.push(refreshData));
+const dataRefresher = async() => {
+	await git.cloneRepo();
+	const cronJob = new CronJob('0 */1 * * * *', 
+		() => queue.push(refreshData));
 	cronJob.start();
 }
 
-module.exports = refreshData;
+module.exports = dataRefresher;

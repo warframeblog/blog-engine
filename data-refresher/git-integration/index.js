@@ -1,5 +1,7 @@
-const {Repository, Checkout, CheckoutOptions, Signature, Reference, PushOptions, Cred, Enums} = require("nodegit");
-const path = require('path');
+const {Repository, Checkout, CheckoutOptions, Signature, Reference, PushOptions, Cred, Enums, Clone} = require("nodegit");
+const join = require('path').join;
+
+const PATH_TO_REPO = join(__basedir, process.env.REPO_FOLDER);
 
 const resetRepoState = async() => {
 	const repo = await openRepo();
@@ -10,9 +12,10 @@ const resetRepoState = async() => {
 
 const openRepo = async() => {
 	try {
-		return Repository.open(process.env.LOCAL_REPO_PATH);
+		return Repository.open(PATH_TO_REPO);
 	} catch(e) {
 		console.log(`Cannot open repo ${e}`);
+		throw e;
 	}
 }
 
@@ -23,6 +26,7 @@ const checkoutRepo = async(repo) => {
 		return await Checkout.head(repo, checkoutOptions);
 	} catch(e) {
 		console.log(`Cannot checkout repo: ${e}`);
+		throw e;
 	}
 }
 
@@ -31,6 +35,7 @@ const pullRepo = async(repo) => {
 		return repo.fetch('origin', {});
 	} catch(e) {
 		console.log(`Cannot pull repo: ${e}`);
+		throw e;
 	}
 }
 
@@ -55,6 +60,7 @@ const indexRepoChanges = async(repo) => {
 		return await repoIndex.writeTree();
 	} catch(e) {
 		console.log(`Cannot add changed files to index ${e}`);
+		throw e;
 	}
 }
 
@@ -64,6 +70,7 @@ const getLatestHeadCommitOid = async(repo) => {
 		return await repo.getCommit(headRef);
 	} catch(e) {
 		console.log(`Cannot retrieve head commit oid ${e}`);
+		throw e;
 	}
 }
 
@@ -74,7 +81,9 @@ const pushRepoChanges = async(repo) => {
 		certificateCheck: skipCertCheck,
 		credentials: onCredentialCheck,
 		pushUpdateReference: (refname, message) => {
-			console.log(`Push was not successfull ${message}`);
+			if(message) {
+				console.log(`Push was not successfull ${message}`);
+			}
 		}
 	};
 
@@ -83,7 +92,6 @@ const pushRepoChanges = async(repo) => {
 }
 
 const onCredentialCheck = () => {
-	console.log('Credentials being added to Push Call');
 	return Cred.userpassPlaintextNew(process.env.GITHUB_TOKEN, 'x-oauth-basic');;
 }
 
@@ -91,7 +99,24 @@ const skipCertCheck = () => {
 	return 1;
 }
 
+const cloneRepo = async() => {
+	const cloneOptions = {
+		fetchOpts: {
+			callbacks: {
+				certificateCheck: skipCertCheck
+			}
+		}
+	};
+	try {
+		await Clone(process.env.REPO, PATH_TO_REPO, cloneOptions);
+	} catch(e) {
+		console.log(`Cannot clone repo ${process.env.repo} to directory ${PATH_TO_REPO}: ${e}`);
+		throw e;
+	}
+}
+
 module.exports = {
 	resetRepoState,
-	changeRepoState
+	changeRepoState,
+	cloneRepo
 }
