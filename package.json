@@ -29,12 +29,12 @@
     "queue": "^6.0.0"
   },
   "_moduleAliases": {
-    "@data-refresher": "data-refresher",
-    "@update-events": "data-refresher/update-events",
-    "@update-rewards-drop": "data-refresher/update-rewards-drop",
-    "@git-integration": "data-refresher/git-integration",
-    "@platforms": "data-refresher/platforms",
-    "@update-if-changed": "data-refresher/update-if-changed",
-    "@drops-page-data": "data-refresher/drops-page-data"
+    "@data-updater": "data-updater",
+    "@update-events": "data-updater/update-events",
+    "@update-rewards-drop": "data-updater/update-rewards-drop",
+    "@git-integration": "data-updater/git-integration",
+    "@platforms": "data-updater/platforms",
+    "@update-if-changed": "data-updater/update-if-changed",
+    "@drops-page-data": "data-updater/drops-page-data"
   }
 }

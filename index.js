@@ -6,9 +6,9 @@ const express = require('express');
 
 const app = express();
 
-const dataRefresher = require('@data-refresher');
+const dataUpdater = require('@data-updater');
 
-dataRefresher();
+dataUpdater();
 
 app.get('/', (req, res) => res.send('Hello World!'));
 
