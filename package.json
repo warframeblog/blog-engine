@@ -23,6 +23,7 @@
     "cheerio": "^1.0.0-rc.2",
     "cron": "^1.7.0",
     "dotenv": "^6.2.0",
+    "express": "^4.16.4",
     "module-alias": "^2.2.0",
     "nodegit": "^0.24.1",
     "queue": "^6.0.0"
