@@ -13,15 +13,25 @@ const refreshData = async() => {
 	} catch(e) {
 		console.log(`Cannot complete some of the updates ${e}`);
 		await git.resetRepoState();
+		throw e;
 	}
 	if(result && result.some(r => r === true)) {
-		await git.changeRepoState();		
+		await git.changeRepoState();
+		return true;		
+	} else {
+		return false;
 	}
 }
 
 const queue = new Queue({ concurrency: 1, autostart: true })
-	.on('start', () => console.log('start'))
-	.on('success', () => console.log('success'))
+	.on('start', () => console.log(`Start refreshing data`))
+	.on('success', (result) => {
+		if(result) {
+			console.log(`Data was successfully updated`);
+		} else {
+			console.log(`Data is up to date`);
+		}
+	})
 	.on('error', (e) => console.log(e));
 
 const dataRefresher = async() => {
