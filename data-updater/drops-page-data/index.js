@@ -21,7 +21,7 @@ const getDropsByMissionName = ($, missionName) => {
 			const $el = $(this);
 			const thText = $el.text();
 			if($el.children("th").length && /Rotation [ABC]+/.test(thText)) {
-				rotation = thText;
+				rotation = thText.replace( /\s/g, '');
 				index = 0;
 			} else if($el.children("td").length) {
 				const itemName = $el.find('td:first-child').text();
