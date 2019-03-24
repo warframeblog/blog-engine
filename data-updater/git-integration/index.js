@@ -31,8 +31,16 @@ const checkoutRepo = async(repo) => {
 }
 
 const pullRepo = async(repo) => {
+	const pullOptions = {
+		fetchOpts: {
+			callbacks: {
+				certificateCheck: skipCertCheck
+			}
+		}
+	};
 	try {
-		return repo.fetch('origin', {});
+		await repo.fetchAll(pullOptions);
+		return await repo.mergeBranches("master", "origin/master");
 	} catch(e) {
 		console.log(`Cannot pull repo: ${e}`);
 		throw e;
@@ -87,8 +95,12 @@ const pushRepoChanges = async(repo) => {
 		}
 	};
 
-
-    return await remote.push(refSpecs, { callbacks: authenticationCallbacks });
+	try {
+	    return await remote.push(refSpecs, { callbacks: authenticationCallbacks });
+	} catch(e) {
+		console.log(`Cannot push changes: ${e}`);
+		throw e;
+	}
 }
 
 const onCredentialCheck = () => {

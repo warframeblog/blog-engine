@@ -8,7 +8,6 @@ module.exports = async(pathToDataFiles, currentData) => {
 	}
 
 	const previousData = await getPreviousData(pathToDataFiles);
-	console.log(`Previous data: ${previousData}`)
 	const dataDiff = currentData.map((data, index) => {
 		return _.isEqual(data, previousData[index]) ? null : data;
 	});
