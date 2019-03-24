@@ -11,12 +11,21 @@ const load = async() => {
 	}
 }
 
-const getDropsByMissionName = ($, missionName) => {
+const getMissionRewards = ($, missionName) => {
 	const $missionRewardsTableBody = $('#missionRewards').next().find('tbody');
-	let drops = [];
+	return getMissionRewardsByRotation($, missionName, $missionRewardsTableBody);
+}
+
+const getSpecialMissionRewards = ($, specialMissionName) => {
+	const $rewardsTableBody = $(`#transientRewards`).next().find('tbody');
+	return getMissionRewardsByRotation($, specialMissionName, $rewardsTableBody);
+}
+
+const getMissionRewardsByRotation = ($, missionName, $rewardsTableBody) => {
+	let rewardsByRotation = [];
 	let rotation;
 	let index;
-	$missionRewardsTableBody.find(`:contains('${missionName}')`)
+	$rewardsTableBody.find(`:contains('${missionName}')`)
 		.nextUntil('tr.blank-row').each(function() {
 			const $el = $(this);
 			const thText = $el.text();
@@ -27,18 +36,19 @@ const getDropsByMissionName = ($, missionName) => {
 				const itemName = $el.find('td:first-child').text();
 				const probability = $el.find('td:nth-child(2)').text();
 
-				if(!drops[index]) {
-					drops[index] = {};
+				if(!rewardsByRotation[index]) {
+					rewardsByRotation[index] = {};
 				}
-				drops[index][rotation] = `${itemName} ${probability}`;
+				rewardsByRotation[index][rotation] = `${itemName} ${probability}`;
 				index++;
 			}
 
 	});
-	return drops;
+	return rewardsByRotation;
 }
 
 module.exports = {
 	load,
-	getDropsByMissionName
+	getMissionRewards,
+	getSpecialMissionRewards
 }
