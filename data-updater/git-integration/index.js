@@ -108,7 +108,7 @@ const cloneRepo = async() => {
 		}
 	};
 	try {
-		await Clone(process.env.REPO, PATH_TO_REPO, cloneOptions);
+		return await Clone(process.env.REPO, PATH_TO_REPO, cloneOptions);
 	} catch(e) {
 		console.log(`Cannot clone repo ${process.env.repo} to directory ${PATH_TO_REPO}: ${e}`);
 		throw e;

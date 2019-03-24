@@ -1,4 +1,5 @@
 global.__basedir = __dirname;
+console.log(`__basedir was set to ${__dirname}`);
 
 const registerCustomModules = require('module-alias/register')
 const configEnv = require('dotenv').config();
