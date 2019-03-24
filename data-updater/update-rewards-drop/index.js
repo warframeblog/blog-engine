@@ -8,6 +8,7 @@ const PATH_TO_ONSLAUGHT_FOLDER = join(__basedir, process.env.REPO_FOLDER,
 	process.env.DATA_FOLDER, process.env.ONSLAUGHT_FOLDER);
 
 const updateSanctuaryOnslaught = async($) => {
+	console.log('updateSanctuaryOnslaught')
 	const pathToPreviousData = [process.env.NORMAL_ONSLAUGHT_FILENAME]
 		.map(filename => join(PATH_TO_ONSLAUGHT_FOLDER, filename));
 

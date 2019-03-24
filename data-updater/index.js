@@ -27,7 +27,6 @@ const updateDataJob = async() => {
 	await git.resetRepoState();
 
 	const updateResult = await updateData();
-	
 	if(updateResult && updateResult.some(part => part === true)) {
 		await git.changeRepoState();
 		return true;		
