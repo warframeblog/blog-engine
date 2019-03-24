@@ -6,7 +6,7 @@ const updateEvents = require('@update-events');
 const updateRewardsDrop = require('@update-rewards-drop');
 
 const queue = new Queue({ concurrency: 1, autostart: true })
-	.on('start', () => console.log(`Start updating data`))
+	.on('start', () => console.log(`Check for data updates`))
 	.on('success', (result) => {
 		if(result) {
 			console.log(`Data was successfully updated`);
