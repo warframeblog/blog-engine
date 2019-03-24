@@ -24,6 +24,7 @@
     "cron": "^1.7.0",
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
+    "gray-matter": "^4.0.2",
     "module-alias": "^2.2.0",
     "nodegit": "^0.24.1",
     "queue": "^6.0.0"
@@ -35,6 +36,7 @@
     "@git-integration": "data-updater/git-integration",
     "@platforms": "data-updater/platforms",
     "@update-if-changed": "data-updater/update-if-changed",
+    "@update-post-date": "data-updater/update-post-date",
     "@drops-page-data": "data-updater/drops-page-data"
   }
 }

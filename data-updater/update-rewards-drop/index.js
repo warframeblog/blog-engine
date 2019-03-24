@@ -1,8 +1,8 @@
+const join = require('path').join;
+
 const updateIfChanged = require('@update-if-changed');
 const dropsPageData = require('@drops-page-data'); 
-
-const join = require('path').join;
-const fs = require('fs').promises;
+const updatePostDate = require('@update-post-date');
 
 const PATH_TO_ONSLAUGHT_FOLDER = join(__basedir, process.env.REPO_FOLDER, 
 	process.env.DATA_FOLDER, process.env.ONSLAUGHT_FOLDER);
@@ -15,9 +15,9 @@ const updateSanctuaryOnslaught = async($) => {
 	const changed = await updateIfChanged(pathToPreviousData, [currentData]);
 
 	if(changed) {
-		console.log(`updateSanctuaryOnslaught will be performed`)
-		//TODO update post publish date
-
+		const pathToOnslaughtPost = join(__basedir, process.env.REPO_FOLDER, 
+			process.env.CONTENT_FOLDER, process.env.ONSLAUGHT_POST);
+		await updatePostDate(pathToOnslaughtPost);
 	}
 
 	return changed;
