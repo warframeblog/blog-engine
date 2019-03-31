@@ -47,8 +47,44 @@ const getMissionRewardsByRotation = ($, missionName, $rewardsTableBody) => {
 	return rewardsByRotation;
 }
 
+const RELIC_NAME_REGEX = /((Lith|Meso|Neo|Axi)\s.{2,2})/;
+const getItemPartsToRelics = ($, primedItem) => {
+	const $relicRewardsTableBody = $('#relicRewards').next().find('tbody');
+	let itemPartsToRelics = {};
+	let currentRelic = '';
+	$relicRewardsTableBody.find('tr:not(.blank-row)').each(function() {
+		const $el = $(this)
+		if($el.children('th').length) {
+			currentRelic = formatRelicName($el.text());
+		} else if($el.children('td').length) {
+			const itemName = $el.find('td:first-child').text();
+			if(!itemName.includes(primedItem)) {
+				return;
+			}
+
+			if(!itemPartsToRelics[itemName]) {
+				itemPartsToRelics[itemName] = [];
+			}
+
+			if(!itemPartsToRelics[itemName].includes(currentRelic)) {
+				itemPartsToRelics[itemName].push(currentRelic);
+			}
+		}
+	});
+	return itemPartsToRelics;
+}
+
+const formatRelicName = (relicName) => {
+	if(RELIC_NAME_REGEX.test(relicName)) {
+		return relicName.match(RELIC_NAME_REGEX)[1];
+	} else {
+		throw new Error(`Cannot format relic with name ${relicName}`);
+	}
+}
+
 module.exports = {
 	load,
 	getMissionRewards,
-	getSpecialMissionRewards
+	getSpecialMissionRewards,
+	getItemPartsToRelics
 }
