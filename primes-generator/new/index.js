@@ -7,21 +7,23 @@ const dropsPageData = require('@drops-page-data');
 
 const compiledFunction = pug.compileFile(join(__dirname, 'template.pug'));
 
-const VAULTED = 'VAULTED';
+const NEW = 'NEW';
 
-const generateVaultedPrimePost = async() => {
-	const {primedItem, alongWith} = {primedItem: 'Silva & Aegis', alongWith: ['Sybaris', 'Oberon']};
+const generateNewPrimePost = async() => {
+	const {primedItem, alongWith} = {primedItem: 'Tiberon', alongWith: ['Zephyr', 'Kronen']};
 
 	let file = {};
 	file.data = generateFrontMatter(primedItem, alongWith);
 
 	const $ = await dropsPageData.load();
 
-	const itemPartsToRelics = dropsPageData.getItemPartsToAllRelics($, primedItem);
+	const itemPartsToRelics = dropsPageData.getItemPartsToAvailableRelics($, primedItem);
 	// console.log(itemPartsToRelics)
+	const numberOfRelics = 0;
 	file.content = compiledFunction({
 		primedItem,
 		alongWith,
+		numberOfRelics,
 		itemPartsToRelics
 	});
 
@@ -44,10 +46,10 @@ const generateFrontMatter = (primedItem, alongWith) => {
 	frontMatter.categories = ['Primes'];
 	frontMatter.generated = true;
 	frontMatter.primedItem = primedItem;
-	frontMatter.state = VAULTED;
-	frontMatter.image = `/images/primes/warframe-how-to-get-vaulted-${normalizedPrimedItem}-prime.jpg`;
+	frontMatter.state = NEW;
+	frontMatter.image = `/images/primes/warframe-how-to-get-${normalizedPrimedItem}-prime.jpg`;
 	frontMatter.alongWith = alongWith;
 	return frontMatter;
 }
 
-module.exports = generateVaultedPrimePost;
+module.exports = generateNewPrimePost;

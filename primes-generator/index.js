@@ -13,9 +13,10 @@ Feature - save to file only if file content considerably changed
 */
 
 const generateVaultedPrimePost = require('./vaulted');
+const generateNewPrimePost = require('./new');
 
 const generatePrimePosts = async() => {
-	await generateVaultedPrimePost();
+	await generateNewPrimePost();
 }
 
 module.exports = generatePrimePosts;

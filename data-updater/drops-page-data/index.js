@@ -1,6 +1,6 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-
+const _ = require('lodash');
 
 const load = async() => {
 	try {
@@ -48,7 +48,7 @@ const getMissionRewardsByRotation = ($, missionName, $rewardsTableBody) => {
 }
 
 const RELIC_NAME_REGEX = /((Lith|Meso|Neo|Axi)\s.{2,2})/;
-const getItemPartsToRelics = ($, primedItem) => {
+const getItemPartsToAllRelics = ($, primedItem) => {
 	const $relicRewardsTableBody = $('#relicRewards').next().find('tbody');
 	let itemPartsToRelics = {};
 	let currentRelic = '';
@@ -82,9 +82,39 @@ const formatRelicName = (relicName) => {
 	}
 }
 
+const getItemPartsToAvailableRelics = ($, primedItem) => {
+	const itemPartsToAllRelics = getItemPartsToAllRelics($, primedItem);
+	const availableRelics = getAvailableRelics($);
+
+	let itemPartsToAvailableRelics = {};
+	_.each(itemPartsToAllRelics, (allRelics, itemPart) => {
+		itemPartsToAvailableRelics[itemPart] = allRelics.filter(relic => availableRelics.includes(relic));
+	});
+	return itemPartsToAvailableRelics;
+}
+
+const getAvailableRelics = ($) => {
+	const $missionRewardsTableBody = $('#missionRewards').next().find('tbody');
+	let availableRelics = [];
+	$missionRewardsTableBody.find('tr:not(.blank-row)').each(function() {
+		const $el = $(this);
+		if($el.children("td").length) {
+			const tdFirstChild = $el.find('td:first-child').text();
+			if(tdFirstChild.includes('Relic')) {
+				const relicName = formatRelicName(tdFirstChild);
+				if(!availableRelics.includes(relicName)) {
+					availableRelics.push(relicName);
+				}
+			}
+		}});
+
+	return availableRelics;
+}
+
 module.exports = {
 	load,
 	getMissionRewards,
 	getSpecialMissionRewards,
-	getItemPartsToRelics
+	getItemPartsToAllRelics,
+	getItemPartsToAvailableRelics
 }
