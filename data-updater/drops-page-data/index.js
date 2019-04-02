@@ -111,10 +111,30 @@ const getAvailableRelics = ($) => {
 	return availableRelics;
 }
 
+const getRelicEras = (relics) => {
+	return relics.map(relic => {
+		return relic.match(RELIC_NAME_REGEX)[2];
+	});
+}
+
+const groupRelicsByEras = (relics) => {
+	let result = {};
+	relics.forEach(relic => {
+		const relicEra = relic.match(RELIC_NAME_REGEX)[2];
+		if(!result[relicEra]) {
+			result[relicEra] = [];		
+		}
+		result[relicEra].push(relic);		
+	});
+	return result;
+}
+
 module.exports = {
 	load,
 	getMissionRewards,
 	getSpecialMissionRewards,
 	getItemPartsToAllRelics,
-	getItemPartsToAvailableRelics
+	getItemPartsToAvailableRelics,
+	getRelicEras,
+	groupRelicsByEras
 }
