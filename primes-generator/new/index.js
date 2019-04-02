@@ -3,6 +3,7 @@ const join = require('path').join;
 const pug = require('pug');
 const matter = require('gray-matter');
 const _ = require('lodash');
+const converter = require('number-to-words');
 
 const dropsPageData = require('@drops-page-data');
 
@@ -11,16 +12,16 @@ const compiledFunction = pug.compileFile(join(__dirname, 'template.pug'));
 const NEW = 'NEW';
 
 const generateNewPrimePost = async() => {
-	const {primedItem, alongWith} = {primedItem: 'Ember', alongWith: ['Zephyr', 'Kronen']};
+	const {primedItem, alongWith} = {primedItem: 'Tiberon', alongWith: ['Zephyr', 'Kronen']};
 
 	let file = {};
 	file.data = generateFrontMatter(primedItem, alongWith);
 
 	const $ = await dropsPageData.load();
 
-	const itemPartsToRelics = dropsPageData.getItemPartsToAllRelics($, primedItem);
-	console.log(itemPartsToRelics)
-	const numberOfRelics = 0;
+	const itemPartsToRelics = dropsPageData.getItemPartsToAvailableRelics($, primedItem);
+	const allRelics = Object.values(itemPartsToRelics).join(',');
+	const numberOfRelics = converter.toWords(allRelics.split(',').length);
 	const unitedItemPartsByRelicEras = unionItemPartsByRelicEras(itemPartsToRelics);
 	// console.log(JSON.stringify(unitedItemPartsByRelicEras))
 	file.content = compiledFunction({
