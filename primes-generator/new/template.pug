@@ -14,8 +14,7 @@ p Before we proceed any further, I would like to say that all spots that I'll sh
 
 - var mentionedEras = {};
 each object, index  in unitedItemPartsByRelicEras
-	- var parts = 's'
-	- var title = `How To Get ${object.parts.join(' & ')} Relics`;
+	- var title = `How To Get ${object.formattedParts.join(' & ')} Relics`;
 	h3 #{title}
 	each era, num in object.eras
 		- var relics = object.relics[era].join(' / ');

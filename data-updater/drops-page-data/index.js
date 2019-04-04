@@ -47,7 +47,7 @@ const getMissionRewardsByRotation = ($, missionName, $rewardsTableBody) => {
 	return rewardsByRotation;
 }
 
-const RELIC_NAME_REGEX = /((Lith|Meso|Neo|Axi)\s.{2,2})/;
+const RELIC_NAME_REGEX = /((Lith|Meso|Neo|Axi)\s\w\d+)/;
 const getItemPartsToAllRelics = ($, primedItem) => {
 	const $relicRewardsTableBody = $('#relicRewards').next().find('tbody');
 	let itemPartsToRelics = {};

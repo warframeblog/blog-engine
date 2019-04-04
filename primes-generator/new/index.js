@@ -11,9 +11,7 @@ const compiledFunction = pug.compileFile(join(__dirname, 'template.pug'));
 
 const NEW = 'NEW';
 
-const generateNewPrimePost = async() => {
-	const {primedItem, alongWith} = {primedItem: 'Tiberon', alongWith: ['Zephyr', 'Kronen']};
-
+const generateNewPrimePost = async({primedItem, alongWith}) => {
 	let file = {};
 	file.data = generateFrontMatter(primedItem, alongWith);
 
@@ -32,10 +30,25 @@ const generateNewPrimePost = async() => {
 		unitedItemPartsByRelicEras
 	});
 
-	const result = matter.stringify(file);
+	// console.log(result)
+	return matter.stringify(file);
+}
 
-	console.log(result)
-
+const formatItemParts = (itemParts) => {
+	return itemParts.map(itemPart => {
+		if(/.+\sPrime\s(Blueprint|System|Chassis|Neuroptics)/.test(itemPart)) {
+			return itemPart.match(/.+\sPrime\s(Blueprint|System|Chassis|Neuroptics)/)[0];
+		} else {
+			return itemPart;
+		}
+	}).map((itemPart, index) => {
+		if(index === 0) {
+			return itemPart;
+		} else {
+			const lastIndex = itemPart.lastIndexOf(' ');
+			return itemPart.substring(lastIndex, itemPart.length).trim();
+		}
+	});
 }
 
 const generateFrontMatter = (primedItem, alongWith) => {
@@ -92,6 +105,7 @@ const unionItemPartsByRelicEras = (itemPartsToRelics) => {
 		});
 
 		iterationResult.relics = dropsPageData.groupRelicsByEras(allRelics);
+		iterationResult.formattedParts = formatItemParts(iterationResult.parts);
 
 		if(!iterationResult.eras) {
 			iterationResult.eras = [...relicErasOfCurrentItemPart];
