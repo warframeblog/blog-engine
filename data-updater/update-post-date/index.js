@@ -8,7 +8,7 @@ const updatePostDate = async(pathToPost) => {
 
 	contentFile.data.date = new Date();
 
-	await writeNewContent(pathToPost, contentFile.stringify());
+	await writeNewContent(pathToPost, matter.stringify(contentFile));
 
 	console.log(`Post ${pathToPost} date was changed to ${contentFile.data.date}`);
 }
