@@ -40,7 +40,7 @@ const pullRepo = async(repo) => {
 	};
 	try {
 		await repo.fetchAll(pullOptions);
-		return await repo.mergeBranches("master", "origin/master");
+		return await repo.mergeBranches(process.env.REPO_BRANCH, `origin/${process.env.REPO_BRANCH}`);
 	} catch(e) {
 		console.log(`Cannot pull repo: ${e}`);
 		throw e;
@@ -84,7 +84,7 @@ const getLatestHeadCommitOid = async(repo) => {
 
 const pushRepoChanges = async(repo) => {
     const remote = await repo.getRemote('origin');
-    const refSpecs = ['refs/heads/master:refs/heads/master'];
+    const refSpecs = [`refs/heads/${process.env.REPO_BRANCH}:refs/heads/${process.env.REPO_BRANCH}`];
 	const authenticationCallbacks = {
 		certificateCheck: skipCertCheck,
 		credentials: onCredentialCheck,
