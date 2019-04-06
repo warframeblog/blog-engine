@@ -1,53 +1,49 @@
 const CronJob = require('cron').CronJob;
 const Queue = require('queue');
 
-const git = require('@git-integration');
-const updateEvents = require('@update-events');
-const updateRewardsDrop = require('@update-rewards-drop');
+const git = require('./git-integration');
+const tasks = require('./tasks');
 
-const queue = new Queue({ concurrency: 1, autostart: true })
-	.on('start', () => console.log(`Check for data updates`))
-	.on('success', (result) => {
-		if(result) {
-			console.log(`Data was successfully updated`);
-		} else {
-			console.log(`Data is up to date`);
-		}
-	})
-	.on('error', (e) => console.log(e));
+module.exports = async() => {
+	if(!git.isRepoCloned) {
+		await git.cloneRepo();
+	}
 
-const dataUpdater = async() => {
-	await git.cloneRepo();
-	const cronJob = new CronJob('0 */1 * * * *', 
-		() => queue.push(updateDataJob));
-	cronJob.start();
+
+	if(process.env.NODE_ENV === 'production') {
+		const queue = new Queue({ concurrency: 1, autostart: true })
+			.on('start', () => console.log(`Check for data updates`))
+			.on('success', (result) => {
+				if(result) {
+					console.log(`Data was successfully updated`);
+				} else {
+					console.log(`Data is up to date`);
+				}
+			})
+			.on('error', (e) => console.log(e));
+		const cronJob = new CronJob('0 */1 * * * *', () => queue.push(performTasks));
+		cronJob.start();
+	} else {
+		await performTasks();
+	}
 }
 
-const updateDataJob = async() => {
+const performTasks = async() => {
 	await git.resetRepoState();
 
-	const updateResult = await updateData();
-	if(updateResult && updateResult.some(part => part === true)) {
+	let result;
+	try {
+		result = await Promise.all(tasks);
+	} catch(e) {
+		console.log(`Cannot complete some task: ${e}`);
+		await git.resetRepoState();
+		throw e;
+	}
+
+	if(result && result.some(anyChange => anyChange === true)) {
 		await git.changeRepoState();
 		return true;		
 	} else {
 		return false;
 	}
 }
-
-const updateData = async() => {
-	const dataToUpdate = [
-		updateEvents(),
-		updateRewardsDrop(),
-	];
-
-	try {
-		return await Promise.all(dataToUpdate);
-	} catch(e) {
-		console.log(`Cannot complete some of the updates ${e}`);
-		await git.resetRepoState();
-		throw e;
-	}
-}
-
-module.exports = dataUpdater;

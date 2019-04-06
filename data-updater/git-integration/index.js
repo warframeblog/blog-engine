@@ -127,8 +127,19 @@ const cloneRepo = async() => {
 	}
 }
 
+const isRepoCloned = async() => {
+	try {
+		await fs.access(PATH_TO_REPO, fs.constants.F_OK);
+	} catch(e) {
+		return false;
+	}
+
+	return true;
+}
+
 module.exports = {
 	resetRepoState,
 	changeRepoState,
-	cloneRepo
+	cloneRepo,
+	isRepoCloned
 }
