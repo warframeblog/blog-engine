@@ -33,7 +33,7 @@ const performTasks = async() => {
 
 	let result;
 	try {
-		result = await Promise.all(tasks);
+		result = await Promise.all(tasks.map(task => task.call()));
 	} catch(e) {
 		console.log(`Cannot complete some task: ${e}`);
 		await git.resetRepoState();
