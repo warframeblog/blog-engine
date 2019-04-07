@@ -1,5 +1,7 @@
 const {Repository, Checkout, CheckoutOptions, Signature, Reference, PushOptions, Cred, Enums, Clone} = require("nodegit");
 const join = require('path').join;
+const fs = require('fs');
+
 
 const PATH_TO_REPO = join(__basedir, process.env.REPO_FOLDER);
 
@@ -127,9 +129,9 @@ const cloneRepo = async() => {
 	}
 }
 
-const isRepoCloned = async() => {
+const isRepoClonedSync = () => {
 	try {
-		await fs.access(PATH_TO_REPO, fs.constants.F_OK);
+		fs.statSync(PATH_TO_REPO);
 	} catch(e) {
 		return false;
 	}
@@ -141,5 +143,5 @@ module.exports = {
 	resetRepoState,
 	changeRepoState,
 	cloneRepo,
-	isRepoCloned
+	isRepoClonedSync
 }

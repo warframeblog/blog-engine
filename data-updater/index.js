@@ -5,7 +5,7 @@ const git = require('./git-integration');
 const tasks = require('./tasks');
 
 module.exports = async() => {
-	if(!git.isRepoCloned) {
+	if(!git.isRepoClonedSync()) {
 		await git.cloneRepo();
 	}
 
