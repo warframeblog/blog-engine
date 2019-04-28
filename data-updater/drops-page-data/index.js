@@ -11,8 +11,11 @@ const load = async() => {
 	}
 }
 
+const MISSION_REWARDS_ID = '#missionRewards';
+const ROTATION_REGEX = /Rotation [ABC]+/;
+
 const getMissionRewards = ($, missionName) => {
-	const $missionRewardsTableBody = $('#missionRewards').next().find('tbody');
+	const $missionRewardsTableBody = $(MISSION_REWARDS_ID).next().find('tbody');
 	return getMissionRewardsByRotation($, missionName, $missionRewardsTableBody);
 }
 
@@ -29,7 +32,7 @@ const getMissionRewardsByRotation = ($, missionName, $rewardsTableBody) => {
 		.nextUntil('tr.blank-row').each(function() {
 			const $el = $(this);
 			const thText = $el.text();
-			if($el.children("th").length && /Rotation [ABC]+/.test(thText)) {
+			if($el.children("th").length && ROTATION_REGEX.test(thText)) {
 				rotation = thText.replace( /\s/g, '');
 				index = 0;
 			} else if($el.children("td").length) {
@@ -42,8 +45,7 @@ const getMissionRewardsByRotation = ($, missionName, $rewardsTableBody) => {
 				rewardsByRotation[index][rotation] = `${itemName} ${probability}`;
 				index++;
 			}
-
-	});
+		});
 	return rewardsByRotation;
 }
 
@@ -129,6 +131,31 @@ const groupRelicsByEras = (relics) => {
 	return result;
 }
 
+const getDropLocationsByResource = ($, resource) => {
+	const $missionRewardsTableBody = $(MISSION_REWARDS_ID).next().find('tbody');
+	let dropLocations = [];
+	let mission;
+	let rotation;
+	$missionRewardsTableBody.find('tr:not(.blank-row)').each(function() {
+			const $el = $(this);
+			const thText = $el.text();
+			if($el.children("th").length && ROTATION_REGEX.test(thText)) {
+				rotation = thText;
+			} else if($el.children("th").length) {
+				mission = thText;
+			} else if($el.children("td").length) {
+				const itemName = $el.find('td:first-child').text();
+				const probability = $el.find('td:nth-child(2)').text();
+
+				if(itemName.includes(resource)) {
+					dropLocations.push({mission, rotation, probability});
+				}
+			}
+		});
+
+	return dropLocations;
+}
+
 module.exports = {
 	load,
 	getMissionRewards,
@@ -136,5 +163,6 @@ module.exports = {
 	getItemPartsToAllRelics,
 	getItemPartsToAvailableRelics,
 	getRelicEras,
-	groupRelicsByEras
+	groupRelicsByEras,
+	getDropLocationsByResource
 }
