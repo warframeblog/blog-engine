@@ -40,7 +40,6 @@
     "@platforms": "data-updater/platforms",
     "@update-if-changed": "data-updater/update-if-changed",
     "@update-post-date": "data-updater/update-post-date",
-    "@drops-page-data": "data-updater/drops-page-data",
-    "@primes-generator": "primes-generator"
+    "@drops-page-data": "data-updater/drops-page-data"
   }
 }

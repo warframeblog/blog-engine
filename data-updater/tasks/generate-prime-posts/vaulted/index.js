@@ -9,32 +9,38 @@ const compiledFunction = pug.compileFile(join(__dirname, 'template.pug'));
 
 const VAULTED = 'VAULTED';
 
-const generateVaultedPrimePost = async() => {
-	const {primedItem, alongWith} = {primedItem: 'Silva & Aegis', alongWith: ['Sybaris', 'Oberon']};
-
+const generateVaultedPrimePost = async(post) => {
 	let file = {};
-	file.data = generateFrontMatter(primedItem, alongWith);
+	file.data = generateFrontMatter(post);
 
 	const $ = await dropsPageData.load();
 
+	const {primedItem, alongWith} = post;
 	const itemPartsToRelics = dropsPageData.getItemPartsToAllRelics($, primedItem);
-	// console.log(itemPartsToRelics)
 	file.content = compiledFunction({
 		primedItem,
 		alongWith,
-		itemPartsToRelics
+		itemPartsToRelics,
+		utils: {
+			generateAlongWith
+		}
 	});
 
-	const result = matter.stringify(file);
-	console.log(result)
-
+	return matter.stringify(file);
 }
 
-const generateFrontMatter = (primedItem, alongWith) => {
+const generateAlongWith = (alongWith) => {
+	if (alongWith.length === 2) {
+		return `along with the ${alongWith[0]} Prime and the ${alongWith[1]} Prime`;
+	} else if (alongWith.length === 1) {
+		return `and the ${alongWith[0]} Prime`;
+	}
+	return '';
+}
+
+const generateFrontMatter = (post) => {
+	const {primedItem, alongWith, normalizedPrimedItem} = post;
 	let frontMatter = {};
-	const normalizedPrimedItem = primedItem.toLowerCase()
-		.replace(/&/g, '-and-')
-		.replace(/\s/g, '');
 	frontMatter.title = `How To Get ${primedItem} Prime`;
 	frontMatter.seoTitle = `How To Get ${primedItem} Prime. How To Farm ${primedItem} Prime Relics`;
 	frontMatter.date = new Date();

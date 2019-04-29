@@ -1,0 +1,17 @@
+p Hey guys. And the #[strong #{primedItem} Prime] #{utils.generateAlongWith(alongWith)} have been retired(vaulted) from the Warframe reward tables.
+<!--more-->
+
+h2 #{primedItem} Prime Vaulted
+p Now, if you've joined fairly recently there's a pretty good chance you have never experienced the vaulting. So, what it did is remove the relics that would drop parts for the #{primedItem} Prime from the drop table. So, currently #{primedItem} Prime is inaccessible for some period of time. An important thing to remember here though is that while #{primedItem} Prime relics were moved over to the Prime Vault and made inaccessible any relics that were acquired before these items were moved into the Prime Vault will stay. 
+
+h2 How To Get #{primedItem} Prime
+p So, first things first, check the presence of the following relics in your Void Relic Refinement:
+ul
+	each relics, itemPart in itemPartsToRelics
+		- var thatDrop = relics.length === 1 ? ' that drops ' : ' that drop ';
+		- var relicsList = '<b>' + relics.join(', ') + '</b>' + thatDrop + itemPart;
+		li !{relicsList}
+
+p If you don't have any of them then either you could buy #{primedItem} Prime relics from other players or wait until the #{primedItem} Prime eventually returns when the Prime Vault opens again.
+
+p And that’s pretty much all I want to say about #[strong How To Get #{primedItem} Prime]. I hope this guide helped and let's hope #{primedItem} Prime will be unvaulted again soon. Bye-bye.
