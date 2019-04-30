@@ -16,19 +16,16 @@ const join = require('path').join;
 
 const generateVaultedPrimePost = require('./vaulted');
 const generateNewPrimePost = require('./new');
+const generateUnvaultedPrimePost = require('./unvaulted');
 
 const PRIME_POST_FOLDER = join(__basedir, process.env.REPO_FOLDER, 'content', 'primes')
 
-module.exports =  async() => {
+module.exports = async() => {
 	const postsToGenerate = [
 		// {primedItem: 'Tipedo', alongWith: ['Equinox', 'Stradavar']},
 		// {primedItem: 'Stradavar', alongWith: ['Tipedo', 'Equinox']},
 		// {primedItem: 'Equinox', alongWith: ['Tipedo', 'Stradavar']},
-		{primedItem: 'Volt', alongWith: ['Odonata'], access: 'VAULTED'},
-		{primedItem: 'Odonata', alongWith: ['Volt'], access: 'VAULTED'},
-		{primedItem: 'Loki', alongWith: ['Bo', 'Wyrm'], access: 'VAULTED'},
-		{primedItem: 'Bo', alongWith: ['Loki', 'Wyrm'], access: 'VAULTED'},
-		{primedItem: 'Wyrm', alongWith: ['Bo', 'Loki'], access: 'VAULTED'},
+		{primedItem: 'Volt', alongWith: ['Odonata'], access: 'UNVAULTED'},
 	];
 
 	for(let i = 0; i < postsToGenerate.length; i++) {
@@ -54,5 +51,9 @@ const addAdditionalData = (post) => {
 const getGenerator = (post) => {
 	if(post.access === 'VAULTED') {
 		return generateVaultedPrimePost;
+	} else if(post.access === 'UNVAULTED') {
+		return generateUnvaultedPrimePost;
+	} else if(post.access === 'NEW') {
+		return generateNewPrimePost;
 	}
 }

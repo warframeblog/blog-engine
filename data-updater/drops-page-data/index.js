@@ -156,6 +156,67 @@ const getDropLocationsByResource = ($, resource) => {
 	return dropLocations;
 }
 
+const unionItemPartsByRelicEras = (itemPartsToRelics) => {
+	let result = [];
+	let extractedParts = [];
+	_.each(itemPartsToRelics, (relicsOfCurrentItemPart, currentItemPart) => {
+		if(extractedParts.includes(currentItemPart)) {
+			return;
+		}
+		const relicErasOfCurrentItemPart = getRelicEras(relicsOfCurrentItemPart);
+
+		let iterationResult = {
+			parts: []
+		};
+		let allRelics = [...relicsOfCurrentItemPart];
+
+		iterationResult.parts.push(currentItemPart);
+		extractedParts.push(currentItemPart);
+
+		_.each(itemPartsToRelics, (relics, itemPart) => {
+			if(extractedParts.includes(itemPart)) {
+				return;
+			}
+
+			const relicEras = getRelicEras(relics);
+			const sameEras = relicEras.filter(era => relicErasOfCurrentItemPart.includes(era));
+			if(sameEras.length === relicErasOfCurrentItemPart.length) {
+				iterationResult.parts.push(itemPart);
+				iterationResult.eras = [...sameEras];
+				allRelics.push(...relics);
+				extractedParts.push(itemPart);
+			}
+		});
+
+		iterationResult.relics = groupRelicsByEras(allRelics);
+		iterationResult.formattedParts = formatItemParts(iterationResult.parts);
+
+		if(!iterationResult.eras) {
+			iterationResult.eras = [...relicErasOfCurrentItemPart];
+		}
+		result.push(iterationResult);
+	});
+
+	return _.orderBy(result, function(o) { return o.parts.length; }, ['desc']);;
+}
+
+const formatItemParts = (itemParts) => {
+	return itemParts.map(itemPart => {
+		if(/.+\sPrime\s(Blueprint|System|Chassis|Neuroptics)/.test(itemPart)) {
+			return itemPart.match(/.+\sPrime\s(Blueprint|System|Chassis|Neuroptics)/)[0];
+		} else {
+			return itemPart;
+		}
+	}).map((itemPart, index) => {
+		if(index === 0) {
+			return itemPart;
+		} else {
+			const lastIndex = itemPart.lastIndexOf(' ');
+			return itemPart.substring(lastIndex, itemPart.length).trim();
+		}
+	});
+}
+
 module.exports = {
 	load,
 	getMissionRewards,
@@ -164,5 +225,6 @@ module.exports = {
 	getItemPartsToAvailableRelics,
 	getRelicEras,
 	groupRelicsByEras,
-	getDropLocationsByResource
+	getDropLocationsByResource,
+	unionItemPartsByRelicEras
 }
