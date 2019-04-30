@@ -18,6 +18,10 @@ module.exports = async($, postData) => {
 	const allRelics = Object.values(itemPartsToRelics).join(',');
 	const numberOfRelics = converter.toWords(allRelics.split(',').length);
 	const unitedItemPartsByRelicEras = dropsPageData.unionItemPartsByRelicEras(itemPartsToRelics);
+	const cetutBountiesRelicsByTiers = dropsPageData.findCetusBountiesRelicsByTiers($);
+	const solarisBountiesRelicsByTiers = dropsPageData.findSolarisBountiesRelicsByTiers($);
+	console.log(cetutBountiesRelicsByTiers)
+	console.log(solarisBountiesRelicsByTiers)
 	file.content = compiledFunction({
 		primedItem,
 		alongWith,

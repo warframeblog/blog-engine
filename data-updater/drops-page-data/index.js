@@ -217,6 +217,38 @@ const formatItemParts = (itemParts) => {
 	});
 }
 
+const findCetusBountiesRelicsByTiers = ($) => {
+	return findBountiesRelicsByTiers($, '#cetusRewards', 'th:contains("Ghoul")');
+}
+
+const findSolarisBountiesRelicsByTiers = ($) => {
+	return findBountiesRelicsByTiers($, '#solarisRewards', 'th:contains("PROFIT-TAKER")');
+}
+
+const findBountiesRelicsByTiers = ($, id, selectorToSkip) => {
+	const $rewardsTableBody = $(id).next().find('tbody');
+	let tier = 1;
+	let bountiesRelicsByTiers = [];
+	$rewardsTableBody.find('tr').each(function() {
+		const $el = $(this);
+		if($el.hasClass('blank-row')) {
+			++tier;
+		} else if($el.find(selectorToSkip).length) {
+			return false;
+		} else if($el.children("td").length) {
+			const item = $el.find('td:nth-child(2)').text();
+			if(!item.includes('Relic')) {
+				return true;
+			}
+			const relicName = formatRelicName(item);
+			if(!bountiesRelicsByTiers.some(relic => relic.name === relicName && relic.tier === tier)) {
+				bountiesRelicsByTiers.push({name: relicName, tier});
+			}
+		}
+	});
+	return bountiesRelicsByTiers;
+}
+
 module.exports = {
 	load,
 	getMissionRewards,
@@ -226,5 +258,7 @@ module.exports = {
 	getRelicEras,
 	groupRelicsByEras,
 	getDropLocationsByResource,
-	unionItemPartsByRelicEras
+	unionItemPartsByRelicEras,
+	findCetusBountiesRelicsByTiers,
+	findSolarisBountiesRelicsByTiers
 }

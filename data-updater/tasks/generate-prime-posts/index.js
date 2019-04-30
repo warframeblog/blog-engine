@@ -25,9 +25,9 @@ const PRIME_POST_FOLDER = join(__basedir, process.env.REPO_FOLDER, 'content', 'p
 module.exports = async() => {
 	const postsToGenerate = [
 		// {primedItem: 'Tipedo', alongWith: ['Equinox', 'Stradavar']},
-		// {primedItem: 'Stradavar', alongWith: ['Tipedo', 'Equinox']},
-		// {primedItem: 'Equinox', alongWith: ['Tipedo', 'Stradavar']},
-		{primedItem: 'Volt', alongWith: ['Odonata'], state: 'unvaulted'},
+		// {primedItem: 'Stradavar', alongWith: ['Tipedo', 'Equinox'], state: 'unvaulted'},
+		{primedItem: 'Equinox', alongWith: ['Tipedo', 'Stradavar'], state: 'unvaulted'},
+		// {primedItem: 'Volt', alongWith: ['Odonata'], state: 'unvaulted'},
 	];
 
 	const $ = await dropsPageData.load();
