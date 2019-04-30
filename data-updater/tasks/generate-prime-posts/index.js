@@ -14,6 +14,8 @@ Feature - save to file only if file content considerably changed
 const fs = require('fs').promises;
 const join = require('path').join;
 
+const dropsPageData = require('@drops-page-data');
+
 const generateVaultedPrimePost = require('./vaulted');
 const generateNewPrimePost = require('./new');
 const generateUnvaultedPrimePost = require('./unvaulted');
@@ -25,35 +27,38 @@ module.exports = async() => {
 		// {primedItem: 'Tipedo', alongWith: ['Equinox', 'Stradavar']},
 		// {primedItem: 'Stradavar', alongWith: ['Tipedo', 'Equinox']},
 		// {primedItem: 'Equinox', alongWith: ['Tipedo', 'Stradavar']},
-		{primedItem: 'Volt', alongWith: ['Odonata'], access: 'UNVAULTED'},
+		{primedItem: 'Volt', alongWith: ['Odonata'], state: 'unvaulted'},
 	];
 
+	const $ = await dropsPageData.load();
 	for(let i = 0; i < postsToGenerate.length; i++) {
-		const post = addAdditionalData(postsToGenerate[i]);
-		const generator = getGenerator(post);
-		const content = await generator(post);
+		const postData = addAdditionalData(postsToGenerate[i]);
+		const generator = getGenerator(postData);
+		const content = await generator($, postData);
 
-		const pathToPost = join(PRIME_POST_FOLDER, `how-to-get-${post.normalizedPrimedItem}-prime.md`);
+		const pathToPost = join(PRIME_POST_FOLDER, `how-to-get-${postData.normalizedPrimedItem}-prime.md`);
 		await fs.writeFile(pathToPost, content);
 	}
 
 	return false;
 }
 
-const addAdditionalData = (post) => {
-	post.normalizedPrimedItem = post.primedItem.toLowerCase()
+const addAdditionalData = (postData) => {
+	postData.normalizedPrimedItem = postData.primedItem.toLowerCase()
 		.replace(/&/g, '-and-')
 		.replace(/\s/g, '');
 
-	return post;
+	return postData;
 }
 
-const getGenerator = (post) => {
-	if(post.access === 'VAULTED') {
+const getGenerator = (postData) => {
+	if(postData.state === 'vaulted') {
 		return generateVaultedPrimePost;
-	} else if(post.access === 'UNVAULTED') {
+	} else if(postData.state === 'unvaulted') {
 		return generateUnvaultedPrimePost;
-	} else if(post.access === 'NEW') {
+	} else if(postData.state === 'new') {
 		return generateNewPrimePost;
 	}
+
+	return null;
 }

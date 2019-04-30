@@ -9,18 +9,15 @@ const dropsPageData = require('@drops-page-data');
 
 const compiledFunction = pug.compileFile(join(__dirname, 'template.pug'));
 
-const NEW = 'NEW';
-
-module.exports = async({primedItem, alongWith}) => {
+module.exports = async($, postData) => {
 	let file = {};
-	file.data = generateFrontMatter(primedItem, alongWith);
+	file.data = generateFrontMatter(postData);
 
-	const $ = await dropsPageData.load();
-
+	const {primedItem, alongWith} = postData;
 	const itemPartsToRelics = dropsPageData.getItemPartsToAvailableRelics($, primedItem);
 	const allRelics = Object.values(itemPartsToRelics).join(',');
 	const numberOfRelics = converter.toWords(allRelics.split(',').length);
-	const unitedItemPartsByRelicEras = unionItemPartsByRelicEras(itemPartsToRelics);
+	const unitedItemPartsByRelicEras = dropsPageData.unionItemPartsByRelicEras(itemPartsToRelics);
 	// console.log(JSON.stringify(unitedItemPartsByRelicEras))
 	file.content = compiledFunction({
 		primedItem,
@@ -34,11 +31,10 @@ module.exports = async({primedItem, alongWith}) => {
 	return matter.stringify(file);
 }
 
-const generateFrontMatter = (primedItem, alongWith) => {
+const generateFrontMatter = (postData) => {
+	const {primedItem, alongWith, normalizedPrimedItem, state} = postData;
+
 	let frontMatter = {};
-	const normalizedPrimedItem = primedItem.toLowerCase()
-		.replace(/&/g, '-and-')
-		.replace(/\s/g, '');
 	frontMatter.title = `How To Get ${primedItem} Prime`;
 	frontMatter.seoTitle = `How To Get ${primedItem} Prime. How To Farm ${primedItem} Prime Relics`;
 	frontMatter.date = new Date();
@@ -48,7 +44,7 @@ const generateFrontMatter = (primedItem, alongWith) => {
 	frontMatter.categories = ['Primes'];
 	frontMatter.generated = true;
 	frontMatter.primedItem = primedItem;
-	frontMatter.state = NEW;
+	frontMatter.state = state;
 	frontMatter.image = `/images/primes/warframe-how-to-get-${normalizedPrimedItem}-prime.jpg`;
 	frontMatter.alongWith = alongWith;
 	return frontMatter;

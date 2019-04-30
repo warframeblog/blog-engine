@@ -7,15 +7,11 @@ const dropsPageData = require('@drops-page-data');
 
 const compiledFunction = pug.compileFile(join(__dirname, 'template.pug'));
 
-const VAULTED = 'VAULTED';
-
-const generateVaultedPrimePost = async(post) => {
+const generateVaultedPrimePost = async($, postData) => {
 	let file = {};
-	file.data = generateFrontMatter(post);
+	file.data = generateFrontMatter(postData);
 
-	const $ = await dropsPageData.load();
-
-	const {primedItem, alongWith} = post;
+	const {primedItem, alongWith} = postData;
 	const itemPartsToRelics = dropsPageData.getItemPartsToAllRelics($, primedItem);
 	file.content = compiledFunction({
 		primedItem,
@@ -38,8 +34,9 @@ const generateAlongWith = (alongWith) => {
 	return '';
 }
 
-const generateFrontMatter = (post) => {
-	const {primedItem, alongWith, normalizedPrimedItem} = post;
+const generateFrontMatter = (postData) => {
+	const {primedItem, alongWith, normalizedPrimedItem, state} = postData;
+
 	let frontMatter = {};
 	frontMatter.title = `How To Get ${primedItem} Prime`;
 	frontMatter.seoTitle = `How To Get ${primedItem} Prime. How To Farm ${primedItem} Prime Relics`;
@@ -50,7 +47,7 @@ const generateFrontMatter = (post) => {
 	frontMatter.categories = ['Primes'];
 	frontMatter.generated = true;
 	frontMatter.primedItem = primedItem;
-	frontMatter.state = VAULTED;
+	frontMatter.state = state;
 	frontMatter.image = `/images/primes/warframe-how-to-get-vaulted-${normalizedPrimedItem}-prime.jpg`;
 	frontMatter.alongWith = alongWith;
 	return frontMatter;
