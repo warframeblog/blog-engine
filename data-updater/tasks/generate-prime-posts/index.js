@@ -26,8 +26,12 @@ module.exports = async() => {
 	const postsToGenerate = [
 		// {primedItem: 'Tipedo', alongWith: ['Equinox', 'Stradavar']},
 		// {primedItem: 'Stradavar', alongWith: ['Tipedo', 'Equinox'], state: 'unvaulted'},
-		{primedItem: 'Equinox', alongWith: ['Tipedo', 'Stradavar'], state: 'unvaulted'},
-		// {primedItem: 'Volt', alongWith: ['Odonata'], state: 'unvaulted'},
+		// {primedItem: 'Equinox', alongWith: ['Tipedo', 'Stradavar'], state: 'unvaulted'},
+		{primedItem: 'Volt', alongWith: ['Odonata'], state: 'unvaulted'},
+		{primedItem: 'Odonata', alongWith: ['Volt'], state: 'unvaulted'},
+		{primedItem: 'Loki', alongWith: ['Bo', 'Wyrm'], state: 'unvaulted'},
+		{primedItem: 'Bo', alongWith: ['Loki', 'Wyrm'], state: 'unvaulted'},
+		{primedItem: 'Wyrm', alongWith: ['Bo', 'Loki'], state: 'unvaulted'},
 	];
 
 	const $ = await dropsPageData.load();

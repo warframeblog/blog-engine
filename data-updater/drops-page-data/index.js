@@ -49,6 +49,27 @@ const getMissionRewardsByRotation = ($, missionName, $rewardsTableBody) => {
 	return rewardsByRotation;
 }
 
+const getRewardsByMission = ($, missionName) => {
+	const $missionRewardsTableBody = $(MISSION_REWARDS_ID).next().find('tbody');
+	let mission = '';
+	let availableRelics = [];
+	$missionRewardsTableBody.find('tr').each(function() {
+		const $el = $(this);
+		if($el.hasClass('.blank-row')){
+			
+		} else if($el.children("td").length) {
+			const tdFirstChild = $el.find('td:first-child').text();
+			if(tdFirstChild.includes('Relic')) {
+				const relicName = formatRelicName(tdFirstChild);
+				if(!availableRelics.includes(relicName)) {
+					availableRelics.push(relicName);
+				}
+			}
+		}});
+
+	return availableRelics;
+}
+
 const RELIC_NAME_REGEX = /((Lith|Meso|Neo|Axi)\s\w\d+)/;
 const getItemPartsToAllRelics = ($, primedItem) => {
 	const $relicRewardsTableBody = $('#relicRewards').next().find('tbody');
@@ -202,8 +223,8 @@ const unionItemPartsByRelicEras = (itemPartsToRelics) => {
 
 const formatItemParts = (itemParts) => {
 	return itemParts.map(itemPart => {
-		if(/.+\sPrime\s(Blueprint|System|Chassis|Neuroptics)/.test(itemPart)) {
-			return itemPart.match(/.+\sPrime\s(Blueprint|System|Chassis|Neuroptics)/)[0];
+		if(/.+\sPrime\s(Blueprint|Systems|Chassis|Neuroptics)/.test(itemPart)) {
+			return itemPart.match(/.+\sPrime\s(Blueprint|Systems|Chassis|Neuroptics)/)[0];
 		} else {
 			return itemPart;
 		}

@@ -14,24 +14,40 @@ module.exports = async($, postData) => {
 	file.data = generateFrontMatter(postData);
 
 	const {primedItem, alongWith} = postData;
-	const itemPartsToRelics = dropsPageData.getItemPartsToAvailableRelics($, primedItem);
+	const itemPartsToRelics = dropsPageData.getItemPartsToAvailableRelics($, `${primedItem} Prime`);
 	const allRelics = Object.values(itemPartsToRelics).join(',');
 	const numberOfRelics = converter.toWords(allRelics.split(',').length);
 	const unitedItemPartsByRelicEras = dropsPageData.unionItemPartsByRelicEras(itemPartsToRelics);
+	// console.log(allRelics)
 	const cetutBountiesRelicsByTiers = dropsPageData.findCetusBountiesRelicsByTiers($);
 	const solarisBountiesRelicsByTiers = dropsPageData.findSolarisBountiesRelicsByTiers($);
-	console.log(cetutBountiesRelicsByTiers)
-	console.log(solarisBountiesRelicsByTiers)
+	// console.log(cetutBountiesRelicsByTiers)
+	// console.log(solarisBountiesRelicsByTiers)
+
+	const rewards = dropsPageData.getMissionRewards($, 'Void');
+	// console.log(rewards)
 	file.content = compiledFunction({
 		primedItem,
 		alongWith,
 		numberOfRelics,
 		itemPartsToRelics,
-		unitedItemPartsByRelicEras
+		unitedItemPartsByRelicEras,
+		utils: {
+			generateAlongWith
+		}
 	});
 
 	// console.log(result)
 	return matter.stringify(file);
+}
+
+const generateAlongWith = (alongWith) => {
+	if (alongWith.length === 2) {
+		return `along with the ${alongWith[0]} Prime and the ${alongWith[1]} Prime`;
+	} else if (alongWith.length === 1) {
+		return `and the ${alongWith[0]} Prime`;
+	}
+	return '';
 }
 
 const generateFrontMatter = (postData) => {
