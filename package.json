@@ -22,6 +22,7 @@
   "dependencies": {
     "@octokit/rest": "^16.17.0",
     "axios": "^0.18.0",
+    "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.2",
     "cron": "^1.7.0",
     "dotenv": "^6.2.0",
@@ -29,10 +30,13 @@
     "gray-matter": "^4.0.2",
     "lodash": "^4.17.11",
     "module-alias": "^2.2.0",
+    "multer": "^1.4.1",
     "nodegit": "^0.24.1",
     "number-to-words": "^1.2.4",
     "pug": "^2.0.3",
-    "queue": "^6.0.0"
+    "queue": "^6.0.0",
+    "sharp": "^0.22.1",
+    "tinify": "^1.6.0-beta.2"
   },
   "_moduleAliases": {
     "@data-updater": "data-updater",
