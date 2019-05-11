@@ -29,11 +29,12 @@ router.route('/').post(upload.single('image'), async (req, res, next) => {
 	const originalType = file.mimetype;
 
 	const jpgImageBuffer = await transformToJPG(originalType, imageBuffer);
-	const minifiedImageBuffer = await minifyImage(jpgImageBuffer);
+	// const minifiedImage = await minifyImage(jpgImageBuffer);
+	const minifiedImage = jpgImageBuffer;
 
 	const name = file.originalname.split('.')[0];
 	const imageType = req.query.type || CONTENT_IMG_TYPE;
-	const resizedImages = await resize(name, imageType, minifiedImageBuffer);
+	const resizedImages = await resize(name, imageType, minifiedImage);
 
 	const pathToSaveImages = await fulfillFolderStructure(IMAGE_BASE_FOLDER, imageType);
 	await saveImagesToDisk(pathToSaveImages, resizedImages);
@@ -59,7 +60,11 @@ const transformToJPG = async (type, imageBuffer) => {
 }
 
 const minifyImage = async (imageBuffer) => {
-	return imageBuffer;
+	try {
+		return await tinify.fromBuffer(imageBuffer).toBuffer();
+	} catch(e) {
+		console.log(`Cannot minify image ${e}`);
+	}
 }
 
 const resize = async (name, imageType, imageBuffer) => {
@@ -89,40 +94,41 @@ const composeResizeImageList = (name, imageType, originalWidth, imageBuffer) => 
 
 const resizeToLargeSize = async (originalWidth, name, imageBuffer) => {
 	const width = 960;
+	const resizeConfig = { method: 'scale', width };
 	const filename = name + JPG_FILE_EXT;	
-	return await resizeImage(filename, imageBuffer, originalWidth, width);
+	return await resizeImage(filename, imageBuffer, originalWidth, resizeConfig);
 }
 
 const resizeToMediumSize = async (originalWidth, name, imageBuffer) => {
 	const width = 768;
+	const resizeConfig = { method: 'scale', width };
 	const filename = `${name}-${width}` + JPG_FILE_EXT;	
-	return await resizeImage(filename, imageBuffer, originalWidth, width);
+	return await resizeImage(filename, imageBuffer, originalWidth, resizeConfig);
 }
 
 const resizeToSmallSize = async (originalWidth, name, imageBuffer) => {
 	const width = 640;
+	const resizeConfig = { method: 'scale', width };
 	const filename = `${name}-${width}` + JPG_FILE_EXT;	
-	return await resizeImage(filename, imageBuffer, originalWidth, width);
+	return await resizeImage(filename, imageBuffer, originalWidth, resizeConfig);
 }
 
 const resizeToThumbnailSize = async (originalWidth, name, imageBuffer) => {
 	const width = 360;
 	const height = 240;
+	const resizeConfig = { method: 'thumb', width, height };
 	const filename = `${name}-${width}x${height}` + JPG_FILE_EXT;	
-	return await resizeImage(filename, imageBuffer, originalWidth, width, height);
+	return await resizeImage(filename, imageBuffer, originalWidth, resizeConfig);
 }
 
-const resizeImage = async (filename, imageBuffer, originalWidth, desiredWidth, height) => {
+const resizeImage = async (filename, imageBuffer, originalWidth, resizeConfig) => {
 	let resizedImage = imageBuffer;
-
 	try {
-		if(originalWidth !== desiredWidth) {
-			resizedImage = await imageBuffer;
-		}
+		resizedImage = await tinify.fromBuffer(imageBuffer).resize(resizeConfig).toBuffer();
 	} catch(e) {
 		console.log(`Cannot resize image ${e}`);
 	}
-	return {buffer: resizedImage, width: desiredWidth, height, filename};
+	return {buffer: resizedImage, width: resizeConfig.width, height: resizeConfig.height, filename};
 }
 
 const fulfillFolderStructure = async (baseFolder, imageType) => {
@@ -143,7 +149,7 @@ const setUpAdditionalFolders = (imageType) => {
 }
 
 const saveImagesToDisk = async (pathToSaveImages, images) => {
-	const imagesToSave = images.map(img => fs.writeFile(join(pathToSaveImages, img.filename)));
+	const imagesToSave = images.map(img => fs.writeFile(join(pathToSaveImages, img.filename), img.buffer));
 	try {
 		return await Promise.all(imagesToSave);
 	} catch(e) {
