@@ -2,14 +2,15 @@ global.__basedir = __dirname;
 
 const registerCustomModules = require('module-alias/register')
 const configEnv = require('dotenv').config();
-const express = require('express');
 
 const dataUpdater = require('@data-updater');
-
-dataUpdater();
+const webApp = require('./web-app');
 
 if(process.env.NODE_ENV === 'production') {
-	const app = express();
-	app.get('/', (req, res) => res.send('Hello World!'));
-	app.listen(process.env.PORT, () => console.log(`App listening on port ${process.env.PORT}!`));
+	dataUpdater();
+	webApp();
+} else if(process.env.NODE_ENV === 'data-updater-dev') {
+	dataUpdater();
+} else if(process.env.NODE_ENV === 'web-app-dev') {
+	webApp();
 }

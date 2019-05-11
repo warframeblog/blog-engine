@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index"
+    "start": "node index",
+    "data:start": "cross-env NODE_ENV=data-updater-dev nodemon",
+    "web:start": "cross-env NODE_ENV=web-app-dev nodemon"
   },
   "repository": {
     "type": "git",
@@ -41,5 +43,9 @@
     "@update-if-changed": "data-updater/update-if-changed",
     "@update-post-date": "data-updater/update-post-date",
     "@drops-page-data": "data-updater/drops-page-data"
+  },
+  "devDependencies": {
+    "cross-env": "^5.2.0",
+    "nodemon": "^1.19.0"
   }
 }
