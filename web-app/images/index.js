@@ -17,7 +17,7 @@ const JPG_FILE_EXT = '.jpg';
 const CONTENT_IMG_TYPE = 'content';
 const FEATURE_IMG_TYPE = 'feature';
 
-const IMAGE_BASE_FOLDER = join(__basedir, '2019');
+const IMAGE_BASE_FOLDER = join(__basedir, 'images2019');
 
 router.route('/').post(upload.single('image'), async (req, res, next) => {
 	const file = req.file;
@@ -28,13 +28,10 @@ router.route('/').post(upload.single('image'), async (req, res, next) => {
 	const imageBuffer = file.buffer;
 	const originalType = file.mimetype;
 
-	const jpgImageBuffer = await transformToJPG(originalType, imageBuffer);
-	// const minifiedImage = await minifyImage(jpgImageBuffer);
-	const minifiedImage = jpgImageBuffer;
-
 	const name = file.originalname.split('.')[0];
 	const imageType = req.query.type || CONTENT_IMG_TYPE;
-	const resizedImages = await resize(name, imageType, minifiedImage);
+	const jpgImageBuffer = await transformToJPG(originalType, imageBuffer);
+	const resizedImages = await resize(name, imageType, jpgImageBuffer);
 
 	const pathToSaveImages = await fulfillFolderStructure(IMAGE_BASE_FOLDER, imageType);
 	await saveImagesToDisk(pathToSaveImages, resizedImages);
@@ -163,11 +160,11 @@ const produceResult = (imageType, resizedImages, title, alt) => {
 	const prefix = getUrlPrefix(imageType);
 	const pathToDefaultImage = prefix + resizedImages[0].filename;
 	result.url = pathToDefaultImage
-	result.shortcode = `{{< image title='${title}' alt='${alt}' src='${pathToDefaultImage}' `;
+	result.shortcode = `{{< image title="${title}" alt="${alt}" src="${pathToDefaultImage}" `;
 	if(resizedImages.length > 1) {
-		result.shortcode += `srcset='`;
+		result.shortcode += `srcset="`;
 		result.shortcode += resizedImages.map(img => `${prefix + img.filename} ${img.width}w`).join(', ');
-		result.shortcode += `' `;
+		result.shortcode += `" `;
 	}
 	result.shortcode += `>}}`;
 	return result;
