@@ -12,7 +12,7 @@ module.exports = async (context) => {
 	};
 
 	const postContent = await content.getPostContent(post);
-	const postEventData = postContent.data.event;
+	const postEventData = postContent.data.eventData;
 	const presentlyRelevantEventData = await warframestat.getEventData(warframestat.events.FOMORIAN);
 
 	console.log(presentlyRelevantEventData)
@@ -22,7 +22,7 @@ module.exports = async (context) => {
 		postContent.data.date = new Date();
 	}
 
-	postContent.data.event = presentlyRelevantEventData;
+	postContent.data.eventData = presentlyRelevantEventData;
 	await content.writeNewContent(post, postContent);
 	return true;
 }
