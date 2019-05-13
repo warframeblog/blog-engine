@@ -1,13 +1,17 @@
 const CronJob = require('cron').CronJob;
 const Queue = require('queue');
 
-const git = require('./git-integration');
+const git = require('@git-integration');
 const tasks = require('./tasks');
 
-module.exports = async() => {
-	if(!git.isRepoClonedSync()) {
-		await git.cloneRepo();
+
+module.exports = async () => {
+	const repoData = {
+		name: 'warframeblog',
+		branch: 'develop',
+		url: process.env.WARFRAMEBLOG_REPO
 	}
+	const wrappedPeformTasks = await git.transactionWrapper(repoData, performTasks);
 
 
 	if(process.env.NODE_ENV === 'production') {
@@ -21,29 +25,13 @@ module.exports = async() => {
 				}
 			})
 			.on('error', (e) => console.log(e));
-		const cronJob = new CronJob('0 */1 * * * *', () => queue.push(performTasks));
+		const cronJob = new CronJob('0 */1 * * * *', () => queue.push(wrappedPeformTasks));
 		cronJob.start();
 	} else {
-		await performTasks();
+		await wrappedPeformTasks();
 	}
 }
 
-const performTasks = async() => {
-	await git.resetRepoState();
-
-	let result;
-	try {
-		result = await Promise.all(tasks.map(task => task.call()));
-	} catch(e) {
-		console.log(`Cannot complete some task: ${e}`);
-		await git.resetRepoState();
-		throw e;
-	}
-
-	if(result && result.some(anyChange => anyChange === true)) {
-		await git.changeRepoState();
-		return true;		
-	} else {
-		return false;
-	}
+const performTasks = async (context) => {
+	return Promise.all(tasks.map(task => task.call()));
 }

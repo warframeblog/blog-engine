@@ -3,18 +3,19 @@ const join = require('path').join;
 const fs = require('fs');
 
 
-const PATH_TO_REPO = join(__basedir, process.env.REPO_FOLDER);
+const PATH_TO_REPOS = join(__basedir, process.env.REPOS_FOLDER);
 
-const resetRepoState = async() => {
-	const repo = await openRepo();
+const resetRepoState = async(repoData) => {
+	const repo = await openRepo(repoData);
 
 	await checkoutRepo(repo);
-	await pullRepo(repo);
+	await pullRepo(repo, repoData.branch);
 }
 
-const openRepo = async() => {
+const openRepo = async(repoData) => {
 	try {
-		return Repository.open(PATH_TO_REPO);
+		const pathToRepo = getPathToRepo(repoData);
+		return Repository.open(pathToRepo);
 	} catch(e) {
 		console.log(`Cannot open repo ${e}`);
 		throw e;
@@ -32,7 +33,7 @@ const checkoutRepo = async(repo) => {
 	}
 }
 
-const pullRepo = async(repo) => {
+const pullRepo = async(repo, branch) => {
 	const pullOptions = {
 		fetchOpts: {
 			callbacks: {
@@ -42,15 +43,15 @@ const pullRepo = async(repo) => {
 	};
 	try {
 		await repo.fetchAll(pullOptions);
-		return await repo.mergeBranches(process.env.REPO_BRANCH, `origin/${process.env.REPO_BRANCH}`);
+		return await repo.mergeBranches(branch, `origin/${branch}`);
 	} catch(e) {
 		console.log(`Cannot pull repo: ${e}`);
 		throw e;
 	}
 }
 
-const changeRepoState = async() => {
-	const repo = await openRepo();
+const changeRepoState = async(repoData) => {
+	const repo = await openRepo(repoData);
 	const author = Signature.now("Clem", "clem@warframeblog.com");
 	const message = `Update data: ${new Date().getTime()}`;
 	const treeOid = await indexRepoChanges(repo);
@@ -58,7 +59,7 @@ const changeRepoState = async() => {
 
 	const commitId = repo.createCommit('HEAD', author, author, message, treeOid, [parent]);
 
-	return await pushRepoChanges(repo);
+	return await pushRepoChanges(repo, repoData.branch);
 }
 
 const indexRepoChanges = async(repo) => {
@@ -84,9 +85,9 @@ const getLatestHeadCommitOid = async(repo) => {
 	}
 }
 
-const pushRepoChanges = async(repo) => {
+const pushRepoChanges = async(repo, branch) => {
     const remote = await repo.getRemote('origin');
-    const refSpecs = [`refs/heads/${process.env.REPO_BRANCH}:refs/heads/${process.env.REPO_BRANCH}`];
+    const refSpecs = [`refs/heads/${branch}:refs/heads/${branch}`];
 	const authenticationCallbacks = {
 		certificateCheck: skipCertCheck,
 		credentials: onCredentialCheck,
@@ -113,7 +114,7 @@ const skipCertCheck = () => {
 	return 1;
 }
 
-const cloneRepo = async() => {
+const cloneRepo = async(repoData) => {
 	const cloneOptions = {
 		fetchOpts: {
 			callbacks: {
@@ -122,16 +123,18 @@ const cloneRepo = async() => {
 		}
 	};
 	try {
-		return await Clone(process.env.REPO, PATH_TO_REPO, cloneOptions);
+		const pathToRepo = getPathToRepo(repoData);
+		return await Clone(repoData.url, pathToRepo, cloneOptions);
 	} catch(e) {
-		console.log(`Cannot clone repo ${process.env.repo} to directory ${PATH_TO_REPO}: ${e}`);
+		console.log(`Cannot clone repo ${repoData.url} to directory ${pathToRepo}: ${e}`);
 		throw e;
 	}
 }
 
-const isRepoClonedSync = () => {
+const isRepoClonedSync = (repoData) => {
 	try {
-		fs.statSync(PATH_TO_REPO);
+		const pathToRepo = getPathToRepo(repoData);
+		fs.statSync(pathToRepo);
 	} catch(e) {
 		return false;
 	}
@@ -139,9 +142,35 @@ const isRepoClonedSync = () => {
 	return true;
 }
 
+const getPathToRepo = (repoData) => {
+	return join(PATH_TO_REPOS, repoData.name);
+}
+
+const transactionWrapper = async (repoData, funcToWrap) => {
+	if(!isRepoClonedSync(repoData)) {
+		await cloneRepo(repoData);
+	}
+	return async function() {
+		await resetRepoState(repoData);
+
+		let result;
+		try {
+			result = await funcToWrap({repoData});
+		} catch(e) {
+			console.log(`Execution of function failed: ${e}`);
+			await resetRepoState(repoData);
+			throw e;
+		}
+
+		if(result && result.some(anyChange => anyChange === true)) {
+			await changeRepoState(repoData);
+			return true;		
+		} else {
+			return false;
+		}
+	};
+}
+
 module.exports = {
-	resetRepoState,
-	changeRepoState,
-	cloneRepo,
-	isRepoClonedSync
+	transactionWrapper
 }

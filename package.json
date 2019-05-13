@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index",
-    "data:start": "cross-env NODE_ENV=data-updater-dev nodemon",
+    "data:start": "cross-env NODE_ENV=data-updater-dev node index",
     "web:start": "cross-env NODE_ENV=web-app-dev nodemon"
   },
   "repository": {
