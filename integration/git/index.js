@@ -164,6 +164,7 @@ const transactionWrapper = async (repoData, funcToWrap) => {
 
 		if(result && result.some(anyChange => anyChange === true)) {
 			await changeRepoState(repoData);
+			console.log(`Repo ${repoData.name} state was updated`);
 			return true;		
 		} else {
 			return false;

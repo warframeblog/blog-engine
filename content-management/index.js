@@ -3,7 +3,7 @@ const join = require('path').join;
 
 const matter = require('gray-matter');
 
-const PATH_TO_CONTENT_FOLDER = join(__basedir, process.env.REPO_FOLDER, process.env.CONTENT_FOLDER);
+const CONTENT_FOLDER = 'content';
 
 const getPostContent = async(post) => {
 	const pathToPost = getPathToPost(post);
@@ -17,8 +17,9 @@ const getPostContent = async(post) => {
 }
 
 const getPathToPost = (post) => {
-	const relativePathToPost = post.section ? join(post.section, post.name) : post.name;
-	return join(PATH_TO_CONTENT_FOLDER, relativePathToPost);
+	const pathToContentFolder = join(__basedir, process.env.REPOS_FOLDER, post.repo, CONTENT_FOLDER);
+	const relativePathToPost = post.section ? join(post.section, post.file) : post.file;
+	return join(pathToContentFolder, relativePathToPost);
 }
 
 const writeNewContent = async(post, content) => {

@@ -33,5 +33,5 @@ module.exports = async () => {
 }
 
 const performTasks = async (context) => {
-	return Promise.all(tasks.map(task => task.call()));
+	return Promise.all(tasks.map(task => task.call(null, context)));
 }
