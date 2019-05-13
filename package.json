@@ -42,7 +42,7 @@
     "@data-updater": "data-updater",
     "@update-events": "data-updater/update-events",
     "@update-rewards-drop": "data-updater/update-rewards-drop",
-    "@git-integration": "data-updater/git-integration",
+    "@git-integration": "integration/git",
     "@platforms": "data-updater/platforms",
     "@update-if-changed": "data-updater/update-if-changed",
     "@update-post-date": "data-updater/update-post-date",
